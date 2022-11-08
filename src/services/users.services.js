@@ -355,17 +355,17 @@ async function verifyPayloadUserRegister(reqBody){
     return erros
 }
 
-async function getUser(arg1, arg2){
-    if(arg1 === "id"){
-        const userFound = await repositories.findByPk("Users", arg2)
+async function getUser(tableColumn, valueToLookFor){
+    if(tableColumn === "id"){
+        const userFound = await repositories.findByPk("Users", valueToLookFor)
         return userFound
     }
 
     const userFound = await repositories.findOne("Users", {
         where: {
-            [arg1]: arg2
+            [tableColumn]: valueToLookFor
         }
-    } )
+    })
     return userFound
 }
 

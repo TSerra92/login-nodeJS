@@ -1,8 +1,4 @@
 const usersServices = require("../services/users.services")
-const bcryptHelper = require("../helpers/bcrypt.helpers")
-const jwtHelper = require("../helpers/jwt.helpers")
-const repositories = require("../repositories/index.repositories")
-
 
 module.exports = class UserController{
     static async registerUser(req, res){

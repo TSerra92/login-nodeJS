@@ -1,6 +1,14 @@
+const rolesServices = require("../services/permissions.services")
+
 module.exports = class PermissionsController{
     static async registerPermission(req, res){
         try{
+
+            const result = await rolesServices.registerPermissions(req)
+
+            const { ["httpCode"]:httpCode, ...response } = result
+
+            return res.status(httpCode).send(response)
 
         }catch(err){
             return res.status(500).send({
@@ -15,6 +23,13 @@ module.exports = class PermissionsController{
 
     static async listPermissions(req, res){
         try{
+
+            const result = await rolesServices.listPermissions(req)
+
+            const { ["httpCode"]:httpCode, ...response } = result
+
+            return res.status(httpCode).send(response)
+
 
         }catch(err){
             return res.status(500).send({
