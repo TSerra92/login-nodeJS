@@ -40,7 +40,7 @@ async function registerPermissions(req){
         controller: 'Permissions',
         action: 'RegisterPermissions',
         message: 'Permissão criada com sucesso.',
-        result: newRole
+        result: newPermission
     })
 }
 
