@@ -17,7 +17,7 @@ module.exports = class RolesController{
                 success: false,
                 controller: 'Roles',
                 action: 'RegisterRole',
-                message: "Falha ao registrar cargo.",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }
@@ -38,7 +38,7 @@ module.exports = class RolesController{
                 success: false,
                 controller: 'Roles',
                 action: 'ListRoles',
-                message: "Falha ao buscar tabela de cargos.",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }

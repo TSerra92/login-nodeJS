@@ -3,7 +3,7 @@ const repositories = require("../repositories/index.repositories")
 async function registerPermissions(req){
     const { name, description } = req.body
 
-    const payloadErrors = await verifyPayloadRegisterPermissions(req.body)
+    const payloadErrors = await verifyPayloadPermissions(req.body)
     if (payloadErrors.length){
         return ({
             httpCode: 422,
@@ -57,7 +57,28 @@ async function listPermissions(req){
     })
 }
 
-async function verifyPayloadRegisterPermissions(reqBody){
+async function editPermissions(req){
+    const { name, description } = req.body
+
+    const payloadErrors = await verifyPayloadPermissions(req.body)
+    if(payloadErrors.lenght > 0){
+        return ({
+            httpCode: 422,
+            success: false,
+            controller: 'Permissions',
+            action: 'EditPermissions',
+            message: 'Falha na validação do payload da requisição',
+            result: payloadErrors
+        })
+    }
+
+    
+
+
+
+}
+
+async function verifyPayloadPermissions(reqBody){
     let erros = []
     const { name, description } = reqBody
     if(name == '' || name == null || name == undefined){

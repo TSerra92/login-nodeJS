@@ -10,33 +10,6 @@ require('dotenv').config()
 const port = process.env.PORT
 
 
-const swaggerConfig = {
-    definition: {
-        openapi: '3.0.0',
-        info: {
-            title:"api-login",
-            description: "API Login com Sequelize+JWT+BCrypt",
-            contact: {
-                email:"thgserra@gmail.com"
-            },
-            version:"1.0.0"
-        },
-        servers: [
-                {
-                    url: `http://localhost:${port}/`,
-                    description:"API - Local"
-                },
-        ],
-        externalDoc: {
-            description: 'Leia mais sobre a api-login',
-            url: 'https://github.com/'
-        },
-    },
-    apis:  ['./src/routes/*.js']
-}
-
-const swaggerDocs = swaggerJSDoc(swaggerConfig)
-
 const app = express()
 
 
@@ -46,11 +19,6 @@ app.use(cors({
     credentials: true
 }))
 app.use(helmet())
-
-app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerDocs))
-app.get("/api-doc-json", ()=> {
-    res.json(swaggerDocs).status(200)
-})
 
 conn.sync().then(() => {
     console.log("==============DATABASE - SUCCESSFUL CONNECTION==============")

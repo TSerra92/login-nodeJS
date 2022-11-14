@@ -15,7 +15,7 @@ module.exports = class PermissionsController{
                 success: false,
                 controller: 'Permissions',
                 action: 'RegisterPermission',
-                message: "Falha ao registrar a permição.",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }
@@ -36,7 +36,7 @@ module.exports = class PermissionsController{
                 success: false,
                 controller: 'Permissions',
                 action: 'ListPermissions',
-                message: "Falha ao buscar lista de permições.",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }

@@ -165,7 +165,7 @@ async function editUser(req){
     //Verifica se o token recebido é válido.
     if(!reqHeaderAuth){
         return ({
-            httpCode: 400,
+            httpCode: 401,
             success: false,
             controller: 'Users',
             action: 'EditUser',
@@ -188,7 +188,7 @@ async function editUser(req){
             controller: 'Users',
             action: 'RegisterUsers',
             message: 'Falha na validação do payload da requisição',
-            result: errorsVerifyPayload
+            result: payloadErrors
         })
     }
     //Retorna o usuário através do id encontrado na função verify.
@@ -243,7 +243,7 @@ async function deleteUser(req){
     //Verifica se o token é válido.
     if(!reqAuthToken){
         return ({
-            httpCode: 400,
+            httpCode: 401,
             success: false,
             controller: 'Users',
             action: 'DeleteUser',
@@ -261,11 +261,11 @@ async function deleteUser(req){
     //Verifica se o user foi encontrado.
     if(!userFound){
         return ({
-            httpCode: 400,
+            httpCode: 404,
             success: false,
             controller: 'Users',
             action: 'DeleteUser',
-            message: "Falha ao deletar o usuário. Usuário não encontrado.",
+            message: "Usuário não encontrado.",
             result: userFound
         })
     }

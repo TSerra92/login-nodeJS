@@ -18,7 +18,7 @@ module.exports = class UserController{
                 success: false,
                 controller: 'Users',
                 action: 'RegisterUsers',
-                message: "Falha ao criar usuario",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }
@@ -38,7 +38,7 @@ module.exports = class UserController{
                 success: false,
                 controller: 'Users',
                 action: 'LoginUsers',
-                message: "Falha ao realizar o login.",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }
@@ -58,7 +58,7 @@ module.exports = class UserController{
                 success: false,
                 controller: 'Users',
                 action: 'CheckToken',
-                message: "Falha ao validar o token",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }
@@ -130,7 +130,7 @@ module.exports = class UserController{
                 success: false,
                 controller: 'Users',
                 action: 'EditUser',
-                message: "Falha ao editar o usuário",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }
@@ -148,7 +148,7 @@ module.exports = class UserController{
                 success: false,
                 controller: 'Users',
                 action: 'DeleteUser',
-                message: "Falha ao deletar o usuário",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }
@@ -167,7 +167,7 @@ module.exports = class UserController{
                 success: false,
                 controller: 'Users',
                 action: 'ListUser',
-                message: "Falha ao buscar lista de usuários",
+                message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })
         }

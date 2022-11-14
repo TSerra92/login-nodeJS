@@ -27,6 +27,8 @@ const checkToken = async(req, res, next) => {
         const tokenVerified = await jwtHelper.verifyToken(token)
         req.user = tokenVerified
         next()
+
+        
     }catch(err){
         return res.status(500).send({
             success: false,
