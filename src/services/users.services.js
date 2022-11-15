@@ -35,7 +35,7 @@ async function registerUser(req){
     //Criar senha criptografada com base na senha passada no reqBody
     const bcryptPass = await bcryptHelper.bcryptCreate(pass1)
 
-    //Instancia os dados passados na reqBody em um objeto, e cadastra na tabela user através do comando .create.
+    //Instancia os dados passados na reqBody em um objeto.
     const newUser = {
         name: name,
         cpf: cpf,
@@ -46,7 +46,7 @@ async function registerUser(req){
         photo: photo
     }
 
-    //Cria o usuário no bando de dados através do .create
+    //Cria o usuário no banco de dados através do .create
     await repositories.create("Users", newUser)
 
     //Desestrutura o objeto para retirar a senha antes de retornar o usuário registrado.
@@ -220,9 +220,6 @@ async function editUser(req){
     // })
 
     await repositories.update(userFound, newUserInfo)
-
-
-
 
     return ({
         httpCode: 200,
