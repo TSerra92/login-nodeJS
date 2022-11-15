@@ -1,8 +1,25 @@
 const repositories = require("../repositories/index.repositories")
 
 async function registerPermissions(req){
+    //Instanceia o Token passado no header da requisição.
+    const reqHeaderAuth = await jwtHelper.getToken(req)
+
+    //Verifica se o Token é valido.
+    if(!reqHeaderAuth){
+        return({
+            httpCode: 401,
+            success: false,
+            controller: 'Permissions',
+            action: "RegisterPermissions",
+            message: "Token de autorização inválido.",
+            result: null
+        })
+    }
+
+    //Desestruturação do body da requisição.
     const { name, description } = req.body
 
+    //Verifica se as informações da requisição são válidas.
     const payloadErrors = await verifyPayloadPermissions(req.body)
     if (payloadErrors.length){
         return ({
@@ -15,6 +32,7 @@ async function registerPermissions(req){
         })
     }
 
+    //Verifica se o nome da permissão já está em uso.
     const checkPermission = await getPermission("name", name)
     if(checkPermission !== null){
         return ({
@@ -27,11 +45,13 @@ async function registerPermissions(req){
         })
     }
 
+    //Instancia os dados passados na reqBody em um objeto.
     const newPermission = {
         name: name,
         description: description
     }
 
+    //Cria a permissão no banco de dados através do .create
     await repositories.create("Permissions", newPermission)
 
     return({
@@ -45,6 +65,22 @@ async function registerPermissions(req){
 }
 
 async function listPermissions(req){
+    //Instanceia o Token passado no header da requisição.
+    const reqHeaderAuth = await jwtHelper.getToken(req)
+
+    //Verifica se o Token é valido.
+    if(!reqHeaderAuth){
+        return({
+            httpCode: 401,
+            success: false,
+            controller: 'Permissions',
+            action: "ListPermissions",
+            message: "Token de autorização inválido.",
+            result: null
+        })
+    }
+
+    //Instanceia a lista de permissões através da função findAll.
     const permissionsList = await repositories.findAll("Permissions", )
 
     return ({
@@ -57,9 +93,26 @@ async function listPermissions(req){
     })
 }
 
-async function editPermissions(req){
-    const { name, description } = req.body
+async function editPermission(req){
+    //Instanceia o Token passado no header da requisição.
+    const reqHeaderAuth = await jwtHelper.getToken(req)
 
+    //Verifica se o Token é valido.
+    if(!reqHeaderAuth){
+        return({
+            httpCode: 401,
+            success: false,
+            controller: 'Permissions',
+            action: "EditPermissions",
+            message: "Token de autorização inválido.",
+            result: null
+        })
+    }
+
+    //Desestruturação do body da requisição.
+    const { name, newName, newDescription } = req.body
+
+    //Verifica se as informações da requisição são válidas.
     const payloadErrors = await verifyPayloadPermissions(req.body)
     if(payloadErrors.lenght > 0){
         return ({
@@ -72,9 +125,39 @@ async function editPermissions(req){
         })
     }
 
+    //Retorna a Permissão que está no banco de dados, através do nome passado na requisição.
+    const permissionToBeEdited = await getPermission("name", name)
+    if(!permissionToBeEdited){
+        return ({
+            httpCode: 404,
+            success: false,
+            controller: "Permissions",
+            action: "EditPermission",
+            message: "Permissão não encontrada.",
+            result: null
+        })
+    }
+
+    //Instanceia as novas informações passadas na requisição em um novo objeto.
+    const newPermissionInfo = {
+        name: newName,
+        description: newDescription
+    }
+
+    //Usa a função update do repositories para atualizar os campos no banco de dados.
+    await repositories.update(permissionToBeEdited, newPermissionInfo)
     
+    return ({
+        httpCode: 200,
+        success: true,
+        controller: 'Permissions',
+        action: 'EditPermission',
+        message: "Permissão editado com sucesso.",
+        result: newPermissionInfo
+    })
+}
 
-
+async function deletePermission(req){
 
 }
 
@@ -113,5 +196,7 @@ async function getPermission(tableColumn, valueToLookFor){
 
 module.exports = {
     registerPermissions,
-    listPermissions
+    listPermissions,
+    editPermission,
+    deletePermission
 }

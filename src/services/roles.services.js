@@ -52,7 +52,7 @@ async function registerRole(req){
         description: description
     }
 
-    //Cria o usuário no banco de dados através do .create
+    //Cria o cargo no banco de dados através do .create
     await repositories.create("Roles", newRole)
 
     return({
