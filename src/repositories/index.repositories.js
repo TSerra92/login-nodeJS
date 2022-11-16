@@ -1,7 +1,6 @@
 const models = require('../models/index')
 
-async function findAll(model, args){
-    args ? args : args = {}
+async function findAll(model, args={}){
     return await models[model].findAll(args);
 }
 
@@ -17,14 +16,23 @@ async function create(model, obj){
     return await models[model].create(obj)
 }
 
-async function update(obj, newObj){
-    return await obj.update(newObj)
+//Model vai definir a tabela a ser atualizada, newInfo é a nova informação passada como um objeto e args são as opções. Ex: Where, Include e Etc.
+async function update(model, newInfo, args={}){
+    return await models[model].update(newInfo, args)
 }
+
+async function destroy(model, args={}){
+    return await models[model].destroy(args)
+}
+
+
+
 
 module.exports = {
     findAll,
     findOne,
     findByPk,
     create,
-    update
+    update,
+    destroy
 }

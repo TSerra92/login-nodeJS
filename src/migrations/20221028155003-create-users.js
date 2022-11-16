@@ -21,6 +21,9 @@ module.exports = {
       pass: {
         type: Sequelize.STRING
       },
+      dateOfBirth: {
+        type: Sequelize.STRING
+      },
       tel: {
         type: Sequelize.STRING
       },

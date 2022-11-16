@@ -148,7 +148,11 @@ async function editRole(req){
     }
 
     //Usa a função update do repositories para atualizar os campos no banco de dados.
-    await repositories.update(roleToBeEdited, newRoleInfo)
+    await repositories.update(
+        "Roles", 
+        newRoleInfo, 
+        {where: {id: roleToBeEdited.id}}
+    )
 
     return ({
         httpCode: 200,

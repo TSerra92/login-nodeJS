@@ -5,7 +5,7 @@ const jwtHelper = require("../helpers/jwt.helpers")
 
 async function registerUser(req){
     //Desestruturando os dados do body da requisição.
-    const { name, cpf, email, pass1, pass2, dob, tel, photo } = req.body
+    const { name, cpf, email, pass1, pass2, dateOfBirth, tel, photo } = req.body
 
     //Valida os dados do Payload
     const payloadErros = await verifyPayloadUserRegister(req.body)
@@ -41,7 +41,7 @@ async function registerUser(req){
         cpf: cpf,
         email: email,
         pass: bcryptPass,
-        dob: dob,
+        dateOfBirth: dateOfBirth,
         tel: tel,
         photo: photo
     }
@@ -177,7 +177,8 @@ async function editUser(req){
     //Através da função verify, verifica o token e retorna Nome e ID do usuário com o token.
     const verifiedUser = await jwtHelper.verifyToken(reqHeaderAuth)
 
-    const { name, cpf, email, pass, dob, tel, photo } = req.body
+    //Instanceia os dados do body da requisição.
+    const { name, cpf, email, pass, dateOfBirth, tel, photo } = req.body
 
     //Verifica se as informações da requisição são válidas.
     const payloadErrors = await verifyPayloadUserRegister(req.body)
@@ -203,23 +204,16 @@ async function editUser(req){
         cpf: cpf,
         email: email,
         pass: bcryptPass,
-        dob: dob,
+        dateOfBirth: dateOfBirth,
         tel: tel,
         photo: photo
     }
 
-    //Atualiza o registro do usuário no banco de dados, com os dados passados no reqBody.
-    // await userFound.update({
-    //     name: name,
-    //     cpf: cpf,
-    //     email: email,
-    //     pass: pass,
-    //     dob: dob,
-    //     tel: tel,
-    //     photo: photo
-    // })
-
-    await repositories.update(userFound, newUserInfo)
+    await repositories.update(
+        "Users",
+        newUserInfo,
+        {where: {id: userFound.id}}
+    )
 
     return ({
         httpCode: 200,
@@ -299,7 +293,7 @@ async function verifyConfirmationPassword(pass1, pass2){
 
 async function verifyPayloadUserRegister(reqBody){
     let erros = []
-    const { name, cpf, email, pass1, pass2, dob, tel, photo } = reqBody;
+    const { name, cpf, email, pass1, pass2, dateOfBirth, tel, photo } = reqBody;
 
     if(name == '' || name == null || name == undefined){
         erros.push('O nome do usuário não pode ser vazio.')
@@ -335,10 +329,10 @@ async function verifyPayloadUserRegister(reqBody){
         erros.push('Senhas informadas não são iguais.')
     }
 
-    if(dob == '' || dob == null || dob == undefined){
+    if(dateOfBirth == '' || dateOfBirth == null || dateOfBirth == undefined){
         erros.push('A data de nascimento do usuário não pode ser vazio.')
     }
-    if(typeof dob != "string"){
+    if(typeof dateOfBirth != "string"){
         erros.push('A data de nascimento do usuário deve ser do tipo string.')
     }
 

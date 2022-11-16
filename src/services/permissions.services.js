@@ -1,4 +1,5 @@
 const repositories = require("../repositories/index.repositories")
+const jwtHelper = require("../helpers/jwt.helpers")
 
 async function registerPermissions(req){
     //Instanceia o Token passado no header da requisição.
@@ -145,7 +146,11 @@ async function editPermission(req){
     }
 
     //Usa a função update do repositories para atualizar os campos no banco de dados.
-    await repositories.update(permissionToBeEdited, newPermissionInfo)
+    await repositories.update(
+        "Permissions", 
+        newPermissionInfo, 
+        {where: {id: permissionToBeEdited.id}}
+    )
     
     return ({
         httpCode: 200,
@@ -158,7 +163,28 @@ async function editPermission(req){
 }
 
 async function deletePermission(req){
+    //Recebe os dados do header e retorna apenas o token.
+    const reqAuthToken = await jwtHelper.getToken(req)
 
+    //Verifica se o token é válido.
+    if(!reqAuthToken){
+        return ({
+            httpCode: 401,
+            success: false,
+            controller: 'Permissions',
+            action: 'DeletePermission',
+            message: "Token de autorização inválido.",
+            result: null
+        })
+    }
+
+    //Instanceia os dados do body da requisição.
+    const { name } = req.body
+
+    //Retorna a Permissão que está no banco de dados, através do nome passado na requisição.
+    const permissionToBeDeleted = await getPermission("name", name)
+
+    
 }
 
 async function verifyPayloadPermissions(reqBody){

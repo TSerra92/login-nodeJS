@@ -177,7 +177,7 @@ const userModel = {
                 "type": "string",
                 "example": "senha123"
             },
-            "dob":{
+            "dateOfBirth":{
                 "type": "string",
                 "example": "10/10/22"
             },

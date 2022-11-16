@@ -113,7 +113,7 @@ module.exports = class UserController{
             //     cpf: reqBody.cpf,
             //     email: reqBody.email,
             //     pass: reqBody.pass,
-            //     dob: reqBody.dob,
+            //     dateOfBirth: reqBody.dateOfBirth,
             //     tel: reqBody.tel,
             //     photo: reqBody.photo
             // })
