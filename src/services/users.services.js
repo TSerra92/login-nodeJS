@@ -275,7 +275,11 @@ async function deleteUser(req){
 }
 
 async function listUsers(req){
-    const userList = await repositories.findAll("Users", )
+    const userList = await repositories.findAll("Users", {include: [
+        {
+            association: 'Roles'
+        }
+    ]})
 
     return ({
         httpCode: 200,
