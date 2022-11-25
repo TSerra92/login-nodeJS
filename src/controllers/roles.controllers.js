@@ -1,7 +1,4 @@
 const rolesServices = require("../services/roles.services")
-const jwtHelper = require("../helpers/jwt.helpers")
-
-
 
 module.exports = class RolesController{
     static async registerRole(req, res){
@@ -77,6 +74,24 @@ module.exports = class RolesController{
                 success: false,
                 controller: 'Roles',
                 action: 'DeleteRole',
+                message: "Falha ao realizar a requisição.",
+                result: `${err}`
+            })
+        }
+    }
+
+    static async registerRolesPermissions(req, res){
+        try{
+            const result = await rolesServices.registerRolesPermissions(req)
+
+            const { ["httpCode"]:httpCode, ...response } = result
+
+            return res.status(httpCode).send(response)
+        }catch(err){
+            return res.status(500).send({
+                success: false,
+                controller: 'Roles',
+                action: 'RegisterRolesPermissions',
                 message: "Falha ao realizar a requisição.",
                 result: `${err}`
             })

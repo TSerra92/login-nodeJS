@@ -25,7 +25,9 @@ async function destroy(model, args={}){
     return await models[model].destroy(args)
 }
 
-
+async function bulkCreate(model, arr){
+    return await models[model].bulkCreate(arr)
+}
 
 
 module.exports = {
@@ -34,5 +36,6 @@ module.exports = {
     findByPk,
     create,
     update,
-    destroy
+    destroy,
+    bulkCreate
 }

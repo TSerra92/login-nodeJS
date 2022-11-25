@@ -185,6 +185,63 @@ async function deleteRole(req){
 
 }
 
+async function registerRolesPermissions(req){
+    //Instanceia o Token passado no header da requisição.
+    const reqHeaderAuth = await jwtHelper.getToken(req)
+
+    //Verifica se o Token é valido.
+    if(!reqHeaderAuth){
+        return({
+            httpCode: 401,
+            success: false,
+            controller: 'Roles',
+            action: "RegisterRolesPermissions",
+            message: "Token de autorização inválido.",
+            result: null
+        })
+    }
+
+    //Instanceia o body da requisição.
+    const { roleId, permissionsList } = req.body
+
+    //Verifica se o role existe.
+    const findRole = await getRole("id", roleId)
+
+    if(!findRole){
+        return ({
+            httpCode: 404,
+            success: false,
+            controller: 'Roles',
+            action: 'RegisterRolesPermissions',
+            message: 'Nenhum cargo foi encontrado com esse id.',
+            result: null
+        })
+    }
+
+    //Busca as Permissions através dos IDs informados.
+    const findPermissions = await repositories.findAll("Permissions", { where: { id: permissionsList}})
+
+    //Cria um array para cadastrar todos de uma só vez através do BulkCreate
+    let allPermissions = []
+    findPermissions.map((permission) => {
+        allPermissions.push({
+            id_role: findRole.id,
+            id_permission: permission.id
+        })
+    })
+
+    await repositories.bulkCreate("Roles_Permissions", allPermissions)
+
+    return ({
+        httpCode: 200,
+        success: true,
+        controller: 'Roles',
+        action: 'RegisterRolesPermissions',
+        message: "Permissões criadas com sucesso.",
+        result: allPermissions
+    })
+}
+
 async function verifyPayloadRegisterRole(reqBody){
     let erros = []
     const { name, description } = reqBody
@@ -247,5 +304,7 @@ module.exports = {
     registerRole,
     listRoles,
     editRole,
-    deleteRole
+    deleteRole,
+    registerRolesPermissions,
+    getRole
 }

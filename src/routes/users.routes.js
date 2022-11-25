@@ -12,7 +12,8 @@ class UsersRoutes{
         this.routes.get("/user/checktoken", userController.checkToken),
         this.routes.get("/user/list", userController.listUsers),
         this.routes.put("/user/edit", jwtMiddleware.checkToken, userController.editUser),
-        this.routes.delete("/user/delete", jwtMiddleware.checkToken, userController.deleteUser)
+        this.routes.delete("/user/delete", jwtMiddleware.checkToken, userController.deleteUser),
+        this.routes.post("/user/rolespermissions", jwtMiddleware.checkToken, userController.registerUserRolesPermissions)
 
     }
 

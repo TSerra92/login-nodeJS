@@ -1,6 +1,8 @@
 const repositories = require("../repositories/index.repositories")
 const bcryptHelper = require("../helpers/bcrypt.helpers")
 const jwtHelper = require("../helpers/jwt.helpers")
+const rolesServices = require("../services/roles.services")
+const database = require("../models/index")
 
 
 async function registerUser(req){
@@ -291,6 +293,111 @@ async function listUsers(req){
     })
 }
 
+async function registerUserRolesPermissions(req){
+        //Instanceia o Token passado no header da requisição.
+        const reqHeaderAuth = await jwtHelper.getToken(req)
+
+        //Verifica se o Token é valido.
+        if(!reqHeaderAuth){
+            return({
+                httpCode: 401,
+                success: false,
+                controller: 'Users',
+                action: "RegisterUserRolesPermissions",
+                message: "Token de autorização inválido.",
+                result: null
+            })
+        }
+
+        //Instanceia os dados passados no body da requisição.
+        const {userId, rolesList, permissionsList} = req.body
+
+        //Verifica se o user, roles e permissões existem.
+        const findUser = await getUser("id", userId)
+        const findRoles = await repositories.findAll("Roles", { where: { id: rolesList}})
+        const findPermissions = await repositories.findAll("Permissions", { where: { id: permissionsList}})
+
+        if(!findUser){
+            return ({
+                httpCode: 404,
+                success: false,
+                controller: 'Users',
+                action: 'RegisterUserRolesPermissions',
+                message: 'Nenhum usuário foi encontrado com esse id.',
+                result: null
+            })
+        }
+
+        let confirmedRoles = []
+        await findRoles.map((role) => {
+            confirmedRoles.push(role.dataValues.id)
+        })
+
+        if(confirmedRoles.length != rolesList.length){
+            missingRoles = rolesList.filter(x => !confirmedRoles.includes(x))
+            return({
+                httpCode: 404,
+                success: false,
+                controller: 'Users',
+                action: 'RegisterUserRolesPermissions',
+                message: 'O(s) role(s) informado não foi encontrado.',
+                result: missingRoles
+            })
+        }
+
+        let confirmedPermissions = []
+        await findPermissions.map((permission) => {
+            confirmedPermissions.push(permission.dataValues.id)
+        })
+
+        if(confirmedPermissions.length != permissionsList.length){
+            missingPermissions = permissionsList.filter(x => !confirmedPermissions.includes(x))
+            return ({
+                httpCode: 404,
+                success: false,
+                controller: 'Users',
+                action: 'RegisterUserRolesPermissions',
+                message: 'A(s) permission(s) informado não foi encontrado.',
+                result: missingPermissions
+            })
+        }
+
+        let allUserRoles = []
+        confirmedRoles.map((role) => {
+            allUserRoles.push({
+                id_user: userId,
+                id_role: role
+            })
+        })
+    
+        let allUserPermissions = []
+        confirmedPermissions.map((permission) => {
+            allUserPermissions.push({
+                id_user: userId,
+                id_permission: permission
+            })
+        })
+
+
+        database.sequelize.transaction(async t=> {
+            await repositories.bulkCreate("Users_Roles", allUserRoles, {transaction: t})
+            await repositories.bulkCreate("Users_Permissions", allUserPermissions, {transaction: t})
+        })
+
+        return({
+            httpCode: 200,
+            success: true,
+            controller: 'Users',
+            action: 'RegisterUserRolesPermissions',
+            message: 'Roles e Permissions cadastradas com sucesso para o usuário selecionado.',
+            result: [
+                userId,
+                allUserRoles,
+                allUserPermissions
+            ]
+        })
+}
+
 async function verifyConfirmationPassword(pass1, pass2){
     return pass1 === pass2 ? true : false
 }
@@ -365,7 +472,6 @@ async function getUser(tableColumn, valueToLookFor){
 }
 
 async function verifyPayloadUserLogin(reqBody){
-
     let erros = []
     if(reqBody.email === '' || reqBody.email === null || reqBody.email === undefined){
         erros.push('O email do usuário não pode ser vazio.')
@@ -379,7 +485,6 @@ async function verifyPayloadUserLogin(reqBody){
     if(typeof reqBody.pass != "string"){
         erros.push('A senha do usuário deve ser do tipo string.')
     }
-
     return erros
 }
 
@@ -396,6 +501,7 @@ async function verifyPayloadCheckToken(token){
 }
 
 
+
 module.exports = {
     registerUser,
     loginUser,
@@ -403,6 +509,7 @@ module.exports = {
     editUser,
     deleteUser,
     listUsers,
+    registerUserRolesPermissions,
     verifyPayloadUserRegister,
     verifyConfirmationPassword,
     getUser,
