@@ -24,6 +24,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'id_role',
         constraint: true
       })
+
+      //!SuperManyToMany
+      models.Roles.hasMany(Users_Roles, {foreignKey: 'id_role'})
+      Users_Roles.belongsTo(models.Roles, {foreignKey: 'id_role'})
+      models.Users.hasMany(Users_Roles, {foreignKey: 'id_user'})
+      Users_Roles.belongsTo(models.Users, {foreignKey: 'id_user'})
     }
   }
   Users_Roles.init({
@@ -31,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     id_role: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Users_Roles',
+    modelName: 'Users_Roles'
   });
   return Users_Roles;
 };

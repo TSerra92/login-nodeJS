@@ -24,6 +24,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'id_permission',
         constraint: true
       })
+
+      //!SuperManyToMany
+      models.Permissions.hasMany(Users_Permissions, {foreignKey: 'id_permission'})
+      Users_Permissions.belongsTo(models.Permissions, {foreignKey: 'id_permission'})
+      models.Users.hasMany(Users_Permissions, {foreignKey: 'id_user'})
+      Users_Permissions.belongsTo(models.Users, {foreignKey: 'id_user'})
     }
   }
   Users_Permissions.init({
@@ -31,7 +37,7 @@ module.exports = (sequelize, DataTypes) => {
     id_permission: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Users_Permissions',
+    modelName: 'Users_Permissions'
   });
   return Users_Permissions;
 };

@@ -4,21 +4,27 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.bulkInsert('Roles', [{
-      name: 'Role1',
-      description: 'Role de teste 1'
+      name: 'Desenvolvedor',
+      description: 'Role de desenvolvimento. Deve ter todas as permissões.',
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     {
-      name: 'Role2',
-      description: 'Role de teste 2'
+      name: 'Admin',
+      description: 'Role de administração. Deve ter algumas permissões.',
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
     {
-      name: 'Role3',
-      description: 'Role de teste 3'
+      name: 'Usuário',
+      description: 'Role de user.',
+      createdAt: new Date(),
+      updatedAt: new Date()
     },
   ], {})
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('Permissions', null, {})
+    await queryInterface.bulkDelete('Roles', null, {})
   }
 };

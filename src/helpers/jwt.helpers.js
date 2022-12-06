@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken")
+const repositories = require("../repositories/index.repositories")
 require("dotenv").config()
 
 async function createJWToken(user){
@@ -8,8 +9,6 @@ async function createJWToken(user){
     }, process.env.SECRET_TOKEN, {
         expiresIn: "1d"
     })
-
-    
 }
 
 async function verifyToken(token){
@@ -22,10 +21,17 @@ async function getToken(req){
     
 }
 
+async function getUserByToken(token){
+    const validUser = await jwt.verify(token, process.env.SECRET_TOKEN)
+    const findUser = await repositories.findOne("Users", {where: {id: validUser.id}})
+    return findUser
+}
+
 
 
 module.exports = {
     createJWToken,
     verifyToken,
-    getToken
+    getToken,
+    getUserByToken
 }

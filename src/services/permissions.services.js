@@ -115,7 +115,7 @@ async function editPermission(req){
 
     //Verifica se as informações da requisição são válidas.
     const payloadErrors = await verifyPayloadPermissions(req.body)
-    if(payloadErrors.lenght > 0){
+    if(payloadErrors.length > 0){
         return ({
             httpCode: 422,
             success: false,

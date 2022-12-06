@@ -1,7 +1,6 @@
 const repositories = require("../repositories/index.repositories")
 const bcryptHelper = require("../helpers/bcrypt.helpers")
 const jwtHelper = require("../helpers/jwt.helpers")
-const rolesServices = require("../services/roles.services")
 const database = require("../models/index")
 
 
@@ -11,7 +10,7 @@ async function registerUser(req){
 
     //Valida os dados do Payload
     const payloadErros = await verifyPayloadUserRegister(req.body)
-    if(payloadErros.lenght > 0){
+    if(payloadErros.length > 0){
         return ({
             httpCode: 422,
             success: false,
@@ -72,7 +71,7 @@ async function loginUser(req){
 
     //Valida os dados do Payload
     const payloadErros = await verifyPayloadUserLogin(req.body)
-    if(payloadErros.lenght > 0){
+    if(payloadErros.length > 0){
         return ({
             httpCode: 422,
             success: false,
@@ -160,7 +159,7 @@ async function checkToken(req){
 
 }
 
-async function editUser(req){
+async function editOwnUser(req){
     //Instanceia os dados do header da requisição e já passa pela função getToken para retornar APENAS o token.
     const reqHeaderAuth = await jwtHelper.getToken(req)
 
@@ -184,7 +183,7 @@ async function editUser(req){
 
     //Verifica se as informações da requisição são válidas.
     const payloadErrors = await verifyPayloadUserRegister(req.body)
-    if(payloadErrors.lenght > 0){
+    if(payloadErrors.length > 0){
         return ({
             httpCode: 422,
             success: false,
@@ -229,7 +228,87 @@ async function editUser(req){
 
 }
 
-async function deleteUser(req){
+async function editOtherUser(req){
+    //Instanceia os dados do header da requisição e já passa pela função getToken para retornar APENAS o token.
+    const reqHeaderAuth = await jwtHelper.getToken(req)
+
+    //Verifica se o token recebido é válido.
+    if(!reqHeaderAuth){
+        return ({
+            httpCode: 401,
+            success: false,
+            controller: 'Users',
+            action: 'EditOtherUser',
+            message: "Token de autorização inválido.",
+            result: null
+        })
+    }
+
+
+    //Instanceia os dados da requisição através da desestruturação.
+    const { userToBeEdited, name, cpf, email, pass, dateOfBirth, tel, photo } = req.body
+
+    //Verifica se as informações da requisição são válidas.
+    const payloadErrors = await verifyPayloadUserRegister(req.body)
+    if(payloadErrors.length > 0){
+        return ({
+            httpCode: 422,
+            success: false,
+            controller: 'Users',
+            action: 'RegisterOtherUsers',
+            message: 'Falha na validação do payload da requisição',
+            result: payloadErrors
+        })
+    }
+
+    //Busca o usuário informado através do id
+    const userFound = await repositories.findOne("Users", {where: {id: userToBeEdited }})
+
+    //Verifica se o usuário existe no banco de dados.
+    if(!userFound){
+        return({
+            httpCode: 404,
+            success: false,
+            controller: 'Users',
+            action: 'EditOtherUser',
+            message: 'Usuário informado não encontrado.',
+            result: null
+        })
+    }
+
+    //Criptografa a senha
+    const bcryptPass = await bcryptHelper.bcryptCreate(pass)
+
+    //Cria um objeto com as informações novas.
+    const newUserInfo = {
+        name: name,
+        cpf: cpf,
+        email: email,
+        pass: bcryptPass,
+        dateOfBirth: dateOfBirth,
+        tel: tel,
+        photo: photo
+    }
+
+    //Atualiza no banco de dados o usuário, passando o objeto com as informações novas, através do update().
+    await repositories.update(
+        "Users",
+        newUserInfo,
+        {where: {id: userFound.id}}
+    )
+
+    return({
+        httpCode: 200,
+        success: true,
+        controller: 'Users',
+        action: 'EditOtherUser',
+        message: 'Usuário editado com sucesso.',
+        result: newUserInfo
+    })
+
+}
+
+async function deleteOwnUser(req){
     //Recebe os dados do header e retorna apenas o token.
     const reqAuthToken = await jwtHelper.getToken(req)
 
@@ -240,7 +319,7 @@ async function deleteUser(req){
             success: false,
             controller: 'Users',
             action: 'DeleteUser',
-            message: "Token de autorização inválido.",
+            message: 'Token de autorização inválido.',
             result: null
         })
     }
@@ -258,7 +337,7 @@ async function deleteUser(req){
             success: false,
             controller: 'Users',
             action: 'DeleteUser',
-            message: "Usuário não encontrado.",
+            message: 'Usuário não encontrado.',
             result: userFound
         })
     }
@@ -271,7 +350,50 @@ async function deleteUser(req){
         success: true,
         controller: 'Users',
         action: 'DeleteUser',
-        message: "Usuário deletado com sucesso.",
+        message: 'Usuário deletado com sucesso.',
+        result: null
+    })
+}
+
+async function deleteOtherUser(req){
+    //Recebe os dados do header e retorna apenas o token.
+    const reqAuthToken = await jwtHelper.getToken(req)
+
+    //Verifica se o token é válido.
+    if(!reqAuthToken){
+        return ({
+            httpCode: 401,
+            success: false,
+            controller: 'Users',
+            action: 'DeleteUser',
+            message: 'Token de autorização inválido.',
+            result: null
+        })
+    }
+
+    const { userToBeDeleted } = req.body
+
+    const userFound = await repositories.findOne("Users", {where: {id: userToBeDeleted}})
+
+    if(!userFound){
+        return({
+            httpCode: 404,
+            success: false,
+            controller: 'User',
+            action: 'DeleteOtherUser',
+            message: 'Usuário não encontrado.',
+            result: null
+        })
+    }
+
+    await repositories.destroy("Users", {where: {id: userFound.id}})
+
+    return({
+        httpCode: 200,
+        success: true,
+        controller: 'User',
+        action: 'DeleteOtherUser',
+        message: 'Usuário deletado com sucesso.',
         result: null
     })
 }
@@ -506,8 +628,10 @@ module.exports = {
     registerUser,
     loginUser,
     checkToken,
-    editUser,
-    deleteUser,
+    editOwnUser,
+    editOtherUser,
+    deleteOwnUser,
+    deleteOtherUser,
     listUsers,
     registerUserRolesPermissions,
     verifyPayloadUserRegister,

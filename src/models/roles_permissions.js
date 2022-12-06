@@ -24,14 +24,21 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'id_permission',
         constraint: true
       })
+
+      //!SuperManyToMany
+      models.Permissions.hasMany(Roles_Permissions, {foreignKey: 'id_permission'})
+      Roles_Permissions.belongsTo(models.Permissions, {foreignKey: 'id_permission'})
+      models.Roles.hasMany(Roles_Permissions, {foreignKey: 'id_role'})
+      Roles_Permissions.belongsTo(models.Roles, {foreignKey: 'id_role'})
     }
   }
+  
   Roles_Permissions.init({
     id_role: DataTypes.INTEGER,
     id_permission: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'Roles_Permissions',
+    modelName: 'Roles_Permissions'
   });
   return Roles_Permissions;
 };
